@@ -3,7 +3,22 @@ import { toast } from 'react-toastify';
 
 const API_URL = 'http://localhost:5001/api';
 
-const register = (userData) => axios.post(`${API_URL}/auth/register`, userData);
+//const register = (userData) => axios.post(`${API_URL}/auth/register`, userData);
+
+
+const register = async (userData) => {
+    try {
+      const response = await axios.post(`${API_URL}/auth/register`, userData);
+      // Optionally, show a success toast or return response data
+      toast.success('Registration successful!');
+      return response;
+    } catch (error) {
+      console.error('Registration error:', error);
+      toast.error(error.response?.data?.message || 'Registration failed. Please try again.');
+      throw error;
+    }
+  };
+  
 
 const login = async (userData, navigate) => {
     try {

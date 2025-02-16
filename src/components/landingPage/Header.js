@@ -5,12 +5,11 @@ import './Header.css';
 const Header = () => {
   return (
     <header className="header">
-      <div className="logo">FitLife</div>
+     <a href="/"> <div className="logo">MyFit</div></a> 
       <nav>
         <ul>
-          <li><a href="#features">Features</a></li>
-          <li><a href="#testimonials">Testimonials</a></li>
-          <li><a href="#cta">Get Started</a></li>
+          <li><a href="/register">Register</a></li>
+          <li><a href="/login">Login</a></li>
         </ul>
       </nav>
     </header>

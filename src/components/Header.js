@@ -27,7 +27,7 @@ const Header = () => {
         <div className={styles['header-content']}>
           {/* Logo */}
           <div className={styles.logo} onClick={() => navigate('/')}>
-            <h1>FoodieApp</h1>
+            <h1>MyFit</h1>
           </div>
 
           {/* Centered Navigation Menu */}
