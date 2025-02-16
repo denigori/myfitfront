@@ -1,0 +1,82 @@
+/* Profile.module.css */
+
+/* 🌟 Profile Page Container */
+.profileContainer {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 30px;
+    background: linear-gradient(to bottom right, #ffffff, #f8f8f8);
+    border-radius: 12px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+  }
+  
+  /* 🌟 Title */
+  .profileTitle {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  /* 🌟 Loading & Message */
+  .loadingText,
+  .messageText {
+    font-size: 16px;
+    padding: 10px;
+    color: #555;
+  }
+  
+  /* 🌟 Form Styling */
+  .profileForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  /* 🌟 Input Field Styling */
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+  }
+  
+  .formGroup label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+  }
+  
+  .formGroup input {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .formGroup input:focus {
+    border-color: #4a90e2;
+    box-shadow: 0px 0px 5px rgba(74, 144, 226, 0.5);
+  }
+  
+  /* 🌟 Save Button */
+  .saveButton {
+    padding: 12px;
+    background: #4a90e2;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s ease;
+  }
+  
+  .saveButton:hover {
+    background: #357ab7;
+  }
+  
