@@ -1,82 +1,100 @@
 /* Profile.module.css */
 
-/* 🌟 Profile Page Container */
 .profileContainer {
-    max-width: 600px;
-    margin: 50px auto;
-    padding: 30px;
-    background: linear-gradient(to bottom right, #ffffff, #f8f8f8);
-    border-radius: 12px;
-    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
-    font-family: 'Arial', sans-serif;
-    text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.profileTitle {
+  font-size: 1.8rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.loadingText,
+.messageText {
+  text-align: center;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.loadingText {
+  color: #666;
+}
+
+.messageText {
+  color: green; /* or red if error; you can handle different states in code or with classes */
+}
+
+.profileForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+  color: #333;
+}
+
+.formGroup input,
+.formGroup select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.formGroup input[type="number"]::-webkit-inner-spin-button, 
+.formGroup input[type="number"]::-webkit-outer-spin-button {
+  /* Hide spin buttons in Chrome */
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  border-color: #888;
+}
+
+.saveButton {
+  padding: 0.7rem 1rem;
+  background-color: #1e90ff; /* or your brand color */
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+.saveButton:hover {
+  background-color: #0078e7; /* darker shade of your brand color */
+}
+
+/* Mobile-Friendly */
+@media (max-width: 480px) {
+  .profileContainer {
+    padding: 1rem;
+    margin: 0 1rem;
   }
-  
-  /* 🌟 Title */
+
   .profileTitle {
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 20px;
+    font-size: 1.5rem;
   }
-  
-  /* 🌟 Loading & Message */
-  .loadingText,
-  .messageText {
-    font-size: 16px;
-    padding: 10px;
-    color: #555;
-  }
-  
-  /* 🌟 Form Styling */
-  .profileForm {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  /* 🌟 Input Field Styling */
-  .formGroup {
-    display: flex;
-    flex-direction: column;
-    text-align: left;
-  }
-  
-  .formGroup label {
-    font-size: 14px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 5px;
-  }
-  
-  .formGroup input {
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    outline: none;
-    transition: all 0.3s ease-in-out;
-  }
-  
-  .formGroup input:focus {
-    border-color: #4a90e2;
-    box-shadow: 0px 0px 5px rgba(74, 144, 226, 0.5);
-  }
-  
-  /* 🌟 Save Button */
-  .saveButton {
-    padding: 12px;
-    background: #4a90e2;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.3s ease;
-  }
-  
-  .saveButton:hover {
-    background: #357ab7;
-  }
-  
+}

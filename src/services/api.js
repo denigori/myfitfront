@@ -8,15 +8,16 @@ const API_URL = 'http://localhost:5001/api';
 
 const register = async (userData) => {
     try {
-      const response = await axios.post(`${API_URL}/auth/register`, userData);
-      // Optionally, show a success toast or return response data
-      toast.success('Registration successful!');
-      return response;
-    } catch (error) {
-      console.error('Registration error:', error);
-      toast.error(error.response?.data?.message || 'Registration failed. Please try again.');
-      throw error;
-    }
+        // Make the POST request to the backend
+        const response = await axios.post(`${API_URL}/auth/register`, userData);
+        toast.success(response.data.message || 'Registration successful!');
+        return response.data;
+      } catch (error) {
+        // If user already exists, we'll receive a 409 with a specific message
+        const errMsg = error.response?.data?.message || 'Registration failed. Please try again.';
+        toast.error(errMsg);
+        throw error;
+      }
   };
   
 
@@ -87,6 +88,15 @@ const fetchUserPreferences = async (token) => {
     }
 };
 
+// ✅ Exercise Endpoints
+const generateExercise = (dietData, token) => axios.post(`${API_URL}/exercise/generate`, dietData, {
+    headers: { Authorization: `Bearer ${token}` },
+});
+const getExercise = (token) => axios.get(`${API_URL}/exercise`, {
+    headers: { Authorization: `Bearer ${token}` },
+});
+
+
 // ✅ Diet Plan Endpoints
 const generateDietPlan = (dietData, token) => axios.post(`${API_URL}/diet/generate`, dietData, {
     headers: { Authorization: `Bearer ${token}` },
@@ -108,6 +118,8 @@ export {
     fetchUserPreferences,
     updateUserSettings, 
     updateUserPreferences, // ✅ Now included for preferences updates
+    generateExercise,
+    getExercise,
     generateDietPlan, 
     getDietPlan, 
     fetchDailyDietPlan 

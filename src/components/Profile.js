@@ -31,6 +31,7 @@ function ProfilePage() {
     fetchUserPreferences(token)
       .then((data) => {
         if (data) {
+          // Spread existing state then overwrite with fetched data
           setFormData((prev) => ({ ...prev, ...data }));
         }
       })
@@ -41,11 +42,13 @@ function ProfilePage() {
   }, []);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const token = localStorage.getItem('token');
     if (!token) {
       setMessage('Please log in.');
@@ -53,9 +56,14 @@ function ProfilePage() {
     }
 
     setLoading(true);
-    await updateUserPreferences(token, formData);
-    setLoading(false);
-    setMessage('Profile updated successfully!');
+    try {
+      await updateUserPreferences(token, formData);
+      setMessage('Profile updated successfully!');
+    } catch (error) {
+      setMessage('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -66,39 +74,116 @@ function ProfilePage() {
       {message && <p className={styles.messageText}>{message}</p>}
 
       <form onSubmit={handleSubmit} className={styles.profileForm}>
+        {/* Weight */}
         <div className={styles.formGroup}>
-          <label>Weight:</label>
-          <input type="text" name="weight" value={formData.weight} onChange={handleChange} />
+          <label htmlFor="weight">Weight (kg):</label>
+          <input
+            id="weight"
+            type="number"
+            name="weight"
+            value={formData.weight}
+            onChange={handleChange}
+            placeholder="e.g. 70"
+          />
         </div>
+
+        {/* Height */}
         <div className={styles.formGroup}>
-          <label>Height:</label>
-          <input type="text" name="height" value={formData.height} onChange={handleChange} />
+          <label htmlFor="height">Height (cm):</label>
+          <input
+            id="height"
+            type="number"
+            name="height"
+            value={formData.height}
+            onChange={handleChange}
+            placeholder="e.g. 170"
+          />
         </div>
+
+        {/* Age */}
         <div className={styles.formGroup}>
-          <label>Age:</label>
-          <input type="text" name="age" value={formData.age} onChange={handleChange} />
+          <label htmlFor="age">Age:</label>
+          <input
+            id="age"
+            type="number"
+            name="age"
+            value={formData.age}
+            onChange={handleChange}
+            placeholder="e.g. 30"
+          />
         </div>
+
+        {/* Gender */}
         <div className={styles.formGroup}>
-          <label>Gender:</label>
-          <input type="text" name="gender" value={formData.gender} onChange={handleChange} />
+          <label htmlFor="gender">Gender:</label>
+          <select
+            id="gender"
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+          >
+            <option value="">Select...</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other / Prefer not to say</option>
+          </select>
         </div>
+
+        {/* Favorite Foods */}
         <div className={styles.formGroup}>
-          <label>Favorite Foods:</label>
-          <input type="text" name="favoriteFoods" value={formData.favoriteFoods} onChange={handleChange} />
+          <label htmlFor="favoriteFoods">Favorite Foods:</label>
+          <input
+            id="favoriteFoods"
+            type="text"
+            name="favoriteFoods"
+            value={formData.favoriteFoods}
+            onChange={handleChange}
+            placeholder="e.g. Chicken, Broccoli"
+          />
         </div>
+
+        {/* Disliked Foods */}
         <div className={styles.formGroup}>
-          <label>Disliked Foods:</label>
-          <input type="text" name="dislikedFoods" value={formData.dislikedFoods} onChange={handleChange} />
+          <label htmlFor="dislikedFoods">Disliked Foods:</label>
+          <input
+            id="dislikedFoods"
+            type="text"
+            name="dislikedFoods"
+            value={formData.dislikedFoods}
+            onChange={handleChange}
+            placeholder="e.g. Fish, Peanuts"
+          />
         </div>
+
+        {/* Type of Workout */}
         <div className={styles.formGroup}>
-          <label>Type of Workout:</label>
-          <input type="text" name="typeOfWorkout" value={formData.typeOfWorkout} onChange={handleChange} />
+          <label htmlFor="typeOfWorkout">Type of Workout:</label>
+          <input
+            id="typeOfWorkout"
+            type="text"
+            name="typeOfWorkout"
+            value={formData.typeOfWorkout}
+            onChange={handleChange}
+            placeholder="e.g. Cardio, Weightlifting"
+          />
         </div>
+
+        {/* Days (per week) */}
         <div className={styles.formGroup}>
-          <label>Days:</label>
-          <input type="text" name="days" value={formData.days} onChange={handleChange} />
+          <label htmlFor="days">Days per Week:</label>
+          <input
+            id="days"
+            type="number"
+            name="days"
+            value={formData.days}
+            onChange={handleChange}
+            placeholder="e.g. 3"
+          />
         </div>
-        <button type="submit" className={styles.saveButton}>Save Profile</button>
+
+        <button type="submit" className={styles.saveButton}>
+          Save Profile
+        </button>
       </form>
     </div>
   );

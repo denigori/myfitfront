@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from './DietPlanForm.module.css';
 import Spinner from './Spinner';
-import DietPlan from './DietPlan';
 import { fetchUserPreferences, getDietPlan, generateDietPlan } from '../services/api';
 
 const DietForm = () => {
@@ -9,149 +8,147 @@ const DietForm = () => {
   const [dietPlan, setDietPlan] = useState(null);
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
-  
+
   useEffect(() => {
-    setLoading(true);
     const token = localStorage.getItem('token');
+    if (!token) return; // No token => do nothing or redirect
+
+    setLoading(true);
 
     fetchUserPreferences(token)
       .then((data) => {
-        if (!data) {
-          setLoading(false);
-          return;
-        }
+        if (!data) return;
         setUserData(data);
         return getDietPlan(token);
       })
       .then((plan) => {
-        if (plan) setDietPlan(parseDietPlan(plan.dietPlan));
+        if (plan && plan.dietPlan) {
+          try {
+            // If dietPlan is JSON
+            const parsed = JSON.parse(plan.dietPlan);
+            setDietPlan(parsed);
+          } catch (err) {
+            // Otherwise parse as text fallback
+            setDietPlan(parseDietPlan(plan.dietPlan));
+          }
+        }
       })
-      .catch((error) => console.error("Error fetching diet plan:", error))
+      .catch((error) => {
+        console.error('Error fetching diet plan:', error);
+      })
       .finally(() => setLoading(false));
   }, []);
 
+  /**
+   * parseDietPlan (Text-Fallback)
+   * -----------
+   * Splits text by blank lines => Day blocks
+   * Then each day block is lines => first line is day, rest are meals
+   * Format example:
+   *   Day 1
+   *   Breakfast - Oatmeal
+   *   Lunch - Chicken Salad
+   */
+  const parseDietPlan = (dietPlanText = '') => {
+    if (!dietPlanText.trim()) return [];
 
-  function parseDietPlann(dietPlanText) {
-    if (!dietPlanText) {
-      console.error("❌ No diet plan text provided.");
-      return [];
-    }
-  
-    const days = dietPlanText.split('---').filter(day => day.trim() !== ''); // Split by "---" and remove empty entries
-    const structuredDietPlan = [];
-  
-    days.forEach((dayText) => {
-      const lines = dayText.trim().split('\n').filter(line => line.trim() !== ''); // Split into lines & remove empty ones
-  
-      if (lines.length === 0) return;
-  
-      const dayTitle = lines[0].replace(/\*\*/g, '').trim(); // Extract "Day X" (remove markdown **)
-      const meals = [];
-  
-      for (let i = 1; i < lines.length; i++) {
-        // Matches "**Meal Type:** Description"
-        const match = lines[i].match(/-\s\*\*(.+?)\*\*:\s(.+)/);
-        if (match) {
-          meals.push({
-            meal: match[1].trim(), // Meal Type (e.g., Breakfast, Snack)
-            description: match[2].trim() // Description (e.g., Turkey and avocado omelette)
-          });
-        }
-      }
-  
-      structuredDietPlan.push({
-        day: dayTitle,
-        meals: meals.length > 0 ? meals : []
-      });
-    });
-  
-    return structuredDietPlan;
-  }
-  
+    return dietPlanText
+      .split('\n\n') // Split into day blocks by blank lines
+      .map((dayBlock) => {
+        const lines = dayBlock.trim().split('\n').map((l) => l.trim());
+        if (!lines.length) return null;
 
+        const rawDayName = lines[0];
+        const dayNumber = rawDayName.replace(/^Day\s*/i, ''); // e.g. "Day 1" => "1"
+        const mealLines = lines.slice(1);
+
+        const meals = mealLines.map((line) => {
+          const [type, meal, description] = line.split(' - ').map((str) => str.trim());
+          return {
+            type: type || 'Meal',
+            meal: meal || 'Unnamed Meal',
+            description: description || '',
+          };
+        });
+
+        return { day: dayNumber, meals };
+      })
+      .filter(Boolean);
+  };
+
+  /**
+   * handleGenerateDiet
+   * -----------
+   * Generates a new diet plan using userData via the API.
+   */
   const handleGenerateDiet = async () => {
     setGenerating(true);
     const token = localStorage.getItem('token');
 
     if (!userData) {
-      console.error("❌ No user preferences found!");
+      console.error('No user preferences found!');
       setGenerating(false);
       return;
     }
 
     try {
-      console.log("📤 Sending user preferences to API:", userData);
       const response = await generateDietPlan(userData, token);
-
-      // const strigyfiedData = JSON.stringify(response.data.dietPlan);
-      // console.log('strigyfiedData',strigyfiedData);
-      // const structuredDietPlan = JSON.parse(strigyfiedData);
-      const structuredDietPlan1 = JSON.parse(response.data.dietPlan);
-      console.log('structureddietplan', structuredDietPlan1);
-   
-      
       if (response && response.data.dietPlan) {
-        console.log("✅ Received generated diet plan:", response.data.dietPlan);
-        setDietPlan(structuredDietPlan1);
+        const parsedDietPlan = JSON.parse(response.data.dietPlan);
+        setDietPlan(parsedDietPlan);
       } else {
-        console.error("❌ API response does not contain a valid diet plan.");
+        console.error("API response doesn't contain a valid diet plan.");
       }
     } catch (error) {
-      console.error("❌ Error generating diet plan:", error);
+      console.error('Error generating diet plan:', error);
     } finally {
       setGenerating(false);
     }
   };
 
-  const parseDietPlan = (dietPlanText) => {
-    return dietPlanText
-      .split('\n\n')
-      .map((dayText) => {
-        const [dayName, ...mealLines] = dayText.trim().split('\n');
-        const meals = mealLines.map((line) => {
-          const [mealType, description] = line.split(' - ').map((str) => str.trim());
-          return { meal: mealType, description };
-        });
-        return { day: dayName, meals };
-      });
-  };
-
   return (
     <div className={styles.dietPlanFormPage}>
       {/* Generate Diet Button */}
-      <button 
-        className={styles.generateButton} 
-        onClick={handleGenerateDiet} 
+      <button
+        className={styles.generateButton}
+        onClick={handleGenerateDiet}
         disabled={generating}
       >
-        {generating ? "Generating..." : "Generate Diet Plan"}
+        {generating ? 'Generating...' : 'Generate Diet Plan'}
       </button>
 
+      {/* Show a loading spinner if fetching */}
       {loading && (
         <div className={styles.spinnerContainer}>
           <Spinner />
         </div>
       )}
 
+      {/* Scrollable Cards */}
       {!loading && dietPlan ? (
-        // <DietPlan dietPlan={dietPlan} />
-        <div>
-        {dietPlan.map((planItem) => (
-          <div key={planItem.day} style={{ marginBottom: '2rem' }}>
-            <h2>Day {planItem.day}</h2>
-            <ul>
-              {planItem.meals.map((meal, index) => (
-                <li key={index} style={{ margin: '0.5rem 0' }}>
-                  <strong>{meal.type}: </strong>
-                  {meal.meal} — {meal.description}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
+        <div className={styles.cardsContainer}>
+          {dietPlan.map((planItem, dayIndex) => (
+            <div className={styles.dayCard} key={dayIndex}>
+              <h2 className={styles.dayTitle}>Day {planItem.day}</h2>
+              <ul className={styles.mealsList}>
+                {planItem.meals.map((meal, mealIndex) => (
+                  <li className={styles.mealItem} key={mealIndex}>
+                    <strong>{meal.type}</strong>:
+                    {' '}
+                    {meal.meal}
+                    {meal.description ? ` — ${meal.description}` : ''}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       ) : (
-        <p className={styles.noPlanMessage}>No diet plan available. Click "Generate Diet Plan" to create one.</p>
+        !loading && (
+          <p className={styles.noPlanMessage}>
+            No diet plan available. Click "Generate Diet Plan" to create one.
+          </p>
+        )
       )}
     </div>
   );

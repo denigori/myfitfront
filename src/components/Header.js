@@ -1,19 +1,20 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaUserCircle, FaSignOutAlt, FaHamburger } from 'react-icons/fa';
-import styles from './Header.module.css';  // Importing CSS Module
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { 
+  FaUserCircle, 
+  FaSignOutAlt, 
+  FaHamburger, 
+  FaBars, 
+  FaTimes,
+  FaDumbbell  // Icon for Exercise
+} from 'react-icons/fa';
+import styles from './Header.module.css'; 
 
 const Header = () => {
   const navigate = useNavigate();
-  const isAuthenticated = localStorage.getItem('token') !== null;
-
-  const profile = () => {
-    navigate('/profile');
-  };
-
-  const diet = () => {
-    navigate('/diet');
-  };
+  const [menuOpen, setMenuOpen] = useState(false);
+  
+  const isAuthenticated = Boolean(localStorage.getItem('token'));
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -21,30 +22,96 @@ const Header = () => {
     navigate('/login');
   };
 
+  // Close the menu after navigating (optional behavior)
+  const handleNavClick = (path) => {
+    setMenuOpen(false);
+    navigate(path);
+  };
+
+  if (!isAuthenticated) return null;
+
   return (
-    isAuthenticated && (
-      <header className={styles.header}>
-        <div className={styles['header-content']}>
-          {/* Logo */}
-          <div className={styles.logo} onClick={() => navigate('/')}>
-            <h1>MyFit</h1>
-          </div>
-
-          {/* Centered Navigation Menu */}
-          <nav className={styles['nav-center']}>
-            <ul className={styles['nav-list']}>
-              <li><button onClick={diet} className={styles['nav-button']}><FaHamburger /> Diet</button></li>
-              <li><button onClick={profile} className={styles['nav-button']}><FaUserCircle /> Profile</button></li>
-            </ul>
-          </nav>
-
-          {/* Logout Button on the Right */}
-          <div className={styles['nav-right']}>
-            <button onClick={handleLogout} className={styles['nav-button']}><FaSignOutAlt /> Logout</button>
-          </div>
+    <header className={styles.header}>
+      <div className={styles.headerContent}>
+        
+        {/* Logo (can use an <img> or just styled text) */}
+        <div className={styles.logo} onClick={() => handleNavClick('/')}>
+          {/* <img src="/path/to/logo.png" alt="MyFit Logo" /> */}
+          <h1>MyFit</h1>
         </div>
-      </header>
-    )
+
+        {/* Mobile Menu Icon */}
+        <button 
+          className={styles.menuToggle} 
+          onClick={() => setMenuOpen(!menuOpen)} 
+          aria-label="Toggle navigation menu"
+        >
+          {menuOpen ? <FaTimes /> : <FaBars />}
+        </button>
+
+        {/* Navigation (responsive) */}
+        <nav className={`${styles.nav} ${menuOpen ? styles.showNav : ''}`}>
+          <ul className={styles.navList}>
+            
+            {/* Diet */}
+            <li>
+              <a 
+                href="#diet" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick('/diet');
+                }}
+              >
+                <FaHamburger className={styles.icon} /> 
+                <span>Diet</span>
+              </a>
+            </li>
+
+            {/* Exercise (NEW) */}
+            <li>
+              <a 
+                href="#exercise" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick('/exercise');
+                }}
+              >
+                <FaDumbbell className={styles.icon} /> 
+                <span>Exercise</span>
+              </a>
+            </li>
+
+            {/* Profile */}
+            <li>
+              <a 
+                href="#profile" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick('/profile');
+                }}
+              >
+                <FaUserCircle className={styles.icon} /> 
+                <span>Profile</span>
+              </a>
+            </li>
+          </ul>
+
+          {/* Logout (on the right) */}
+          <div className={styles.logout}>
+            <a 
+              href="#logout" 
+              onClick={(e) => {
+                e.preventDefault();
+                handleLogout();
+              }}
+            >
+              <FaSignOutAlt className={styles.icon} />
+              <span>Logout</span>
+            </a>
+          </div>
+        </nav>
+      </div>
+    </header>
   );
 };
 

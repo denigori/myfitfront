@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styles from './DietPlanForm.module.css';
 import Spinner from './Spinner';
-import DietPlan from './DietPlan';
+import DietPlan from './DietPlantoremove';
 import { fetchUserPreferences, getDietPlan, generateDietPlan } from '../services/api';
 
 const DietForm = () => {

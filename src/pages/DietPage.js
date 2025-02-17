@@ -21,12 +21,7 @@ const DietPage = () => {
 
   return (
     <div>
-      <DietForm
-        dietPlan={dietPlan}
-        loading={loading}
-        fetchDietPlan={handleFetchDietPlan}
-        loadDietPlan={handleLoadDietPlan}
-      />
+      <DietForm/>
     </div>
   );
 };
